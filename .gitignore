@@ -1,5 +1,34 @@
-# Large binary files
-israel-hiking-map/OruxMapsImages.db
+# Dependencies
+node_modules/
+figma-export/node_modules/
+
+# iOS
+ios/Pods/
+ios/build/
+ios/*.xcworkspace/xcuserdata/
+*.pbxuser
+*.mode1v3
+*.mode2v3
+*.perspectivev3
+*.xcuserstate
+
+# Build artifacts
+*.jsbundle
+*.jsbundle.map
+
+# Metro
+.metro-health-check*
 
 # OS files
 .DS_Store
+Thumbs.db
+
+# Large binary files
+israel-hiking-map/OruxMapsImages.db
+
+# Source export (not needed in git)
+NaviguideX_Make_Figma.zip
+
+# Temporary files
+*.log
+*.tmp
