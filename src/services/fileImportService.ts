@@ -8,10 +8,19 @@ import { Route } from '../types';
  * Returns the parsed Route, or null if the user cancelled.
  */
 export async function importGpxFile(): Promise<Route | null> {
-  const [result] = await pick({
-    type: ['public.xml', 'org.topografix.gpx'],
-    copyTo: 'cachesDirectory',
-  });
+  let result;
+  try {
+    [result] = await pick({
+      type: ['public.xml', 'org.topografix.gpx'],
+      copyTo: 'cachesDirectory',
+    });
+  } catch (err: any) {
+    // User cancelled the picker
+    if (err?.code === 'DOCUMENT_PICKER_CANCELED' || /cancel/i.test(err?.message)) {
+      return null;
+    }
+    throw err;
+  }
 
   if (!result || !result.fileCopyUri) {
     return null;

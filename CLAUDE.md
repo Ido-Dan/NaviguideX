@@ -46,7 +46,7 @@ An offroad 4x4 navigation app for iOS, built with React Native + TypeScript. Rev
 - When done with your task, mark it completed and message the lead with a summary of what you built.
 
 ## Tech Stack (Do Not Change)
-- React Native 0.84 (iOS only)
+- React Native 0.83 (iOS only)
 - TypeScript
 - @maplibre/maplibre-react-native
 - @gorhom/bottom-sheet

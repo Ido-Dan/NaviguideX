@@ -1,5 +1,7 @@
 import React, { useEffect, useRef } from 'react';
-import { View, Text, Animated, StyleSheet } from 'react-native';
+import { View, Text, Image, Animated, StyleSheet } from 'react-native';
+
+const naviguideLogo = require('../assets/naviguide_no_background.png');
 
 interface SplashScreenProps {
   onComplete: () => void;
@@ -91,12 +93,11 @@ export function SplashScreen({ onComplete }: SplashScreenProps) {
           },
         ]}
       >
-        {/* Compass symbol */}
-        <View style={styles.compassRing}>
-          <View style={styles.compassNorth} />
-          <View style={styles.compassSouth} />
-          <View style={styles.compassDot} />
-        </View>
+        <Image
+          source={naviguideLogo}
+          style={styles.logo}
+          resizeMode="contain"
+        />
       </Animated.View>
 
       {/* Subtitle */}
@@ -138,44 +139,9 @@ const styles = StyleSheet.create({
   logoContainer: {
     marginBottom: 24,
   },
-  compassRing: {
-    width: 96,
-    height: 96,
-    borderRadius: 48,
-    borderWidth: 3,
-    borderColor: '#81C784',
-    alignItems: 'center',
-    justifyContent: 'center',
-  },
-  compassNorth: {
-    position: 'absolute',
-    top: 8,
-    width: 0,
-    height: 0,
-    borderLeftWidth: 10,
-    borderRightWidth: 10,
-    borderBottomWidth: 30,
-    borderLeftColor: 'transparent',
-    borderRightColor: 'transparent',
-    borderBottomColor: '#2B6E2F',
-  },
-  compassSouth: {
-    position: 'absolute',
-    bottom: 8,
-    width: 0,
-    height: 0,
-    borderLeftWidth: 10,
-    borderRightWidth: 10,
-    borderTopWidth: 30,
-    borderLeftColor: 'transparent',
-    borderRightColor: 'transparent',
-    borderTopColor: '#81C784',
-  },
-  compassDot: {
-    width: 10,
-    height: 10,
-    borderRadius: 5,
-    backgroundColor: '#F57C00',
+  logo: {
+    width: 180,
+    height: 140,
   },
   subtitleContainer: {
     alignItems: 'center',

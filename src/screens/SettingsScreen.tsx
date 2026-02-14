@@ -2,6 +2,7 @@ import React, { useState, useCallback, useEffect } from 'react';
 import {
   View,
   Text,
+  Image,
   TouchableOpacity,
   ScrollView,
   StyleSheet,
@@ -9,6 +10,8 @@ import {
   Alert,
   Linking,
 } from 'react-native';
+
+const naviguideLogo = require('../assets/naviguide_no_background.png');
 import type { NativeStackScreenProps } from '@react-navigation/native-stack';
 import type { MapRegion } from '../types';
 import { useApp } from '../context/AppProvider';
@@ -179,6 +182,14 @@ export function ConnectedSettingsScreen({
         <View style={styles.section}>
           <Text style={styles.sectionTitle}>About</Text>
 
+          <View style={styles.logoContainer}>
+            <Image
+              source={naviguideLogo}
+              style={styles.aboutLogo}
+              resizeMode="contain"
+            />
+          </View>
+
           <Text style={styles.aboutText}>
             <Text style={styles.aboutLabel}>Version: </Text>
             1.0.0 (MVP)
@@ -312,6 +323,14 @@ const styles = StyleSheet.create({
     fontSize: 12,
     color: '#7A7267',
     marginTop: 4,
+  },
+  logoContainer: {
+    alignItems: 'center',
+    marginBottom: 16,
+  },
+  aboutLogo: {
+    width: 160,
+    height: 64,
   },
   aboutText: {
     fontSize: 14,

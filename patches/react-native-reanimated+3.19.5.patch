@@ -1,0 +1,13 @@
+diff --git a/node_modules/react-native-reanimated/apple/reanimated/apple/LayoutReanimation/REASwizzledUIManager.mm b/node_modules/react-native-reanimated/apple/reanimated/apple/LayoutReanimation/REASwizzledUIManager.mm
+index 96ebbcd..d96f06b 100644
+--- a/node_modules/react-native-reanimated/apple/reanimated/apple/LayoutReanimation/REASwizzledUIManager.mm
++++ b/node_modules/react-native-reanimated/apple/reanimated/apple/LayoutReanimation/REASwizzledUIManager.mm
+@@ -222,7 +222,7 @@ - (RCTViewManagerUIBlock)reanimated_uiBlockWithLayoutUpdateForRootView:(RCTRootS
+
+         RCTRootView *rootView = (RCTRootView *)[view superview];
+         if ([rootView isKindOfClass:[RCTRootView class]]) {
+-          rootView.intrinsicContentSize = contentSize;
++          [rootView setValue:[NSValue valueWithCGSize:contentSize] forKey:@"intrinsicContentSize"];
+         }
+       });
+     }

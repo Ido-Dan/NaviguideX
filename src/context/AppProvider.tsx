@@ -118,5 +118,9 @@ export function AppProvider({ children }: AppProviderProps) {
     removeRoute,
   };
 
+  if (state.isLoading) {
+    return null;
+  }
+
   return <AppContext.Provider value={value}>{children}</AppContext.Provider>;
 }
