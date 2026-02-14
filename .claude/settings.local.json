@@ -1,0 +1,11 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(python3:*)",
+      "Bash(sqlite3:*)",
+      "Bash(claude:*)",
+      "Bash(git -C /Users/idodan1/git/naviguidex add .gitignore docs/ israel-hiking-map/Israel Hiking.otrk2.xml .claude/settings.local.json)",
+      "Bash(git -C:*)"
+    ]
+  }
+}

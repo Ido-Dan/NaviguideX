@@ -1,0 +1,157 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<OruxTracker xmlns="http://oruxtracker.com/app/res/calibration"
+ versionCode="3.0">
+<MapCalibration layers="true" layerLevel="0">
+<MapName><![CDATA[Israel Hiking]]></MapName>
+<OruxTracker xmlns="http://oruxtracker.com/app/res/calibration"
+ versionCode="2.1">
+<MapCalibration layers="false" layerLevel="7">
+<MapName><![CDATA[Israel Hiking 07]]></MapName>
+<MapChunks xMax="1" yMax="2" datum="WGS84" projection="Mercator" img_height="512" img_width="512" file_name="Israel Hiking 07" />
+<MapDimensions height="768" width="256" />
+<MapBounds minLat="27.059125784374068" maxLat="34.30714385628804" minLon="33.75" maxLon="36.5625" />
+<CalibrationPoints>
+<CalibrationPoint corner="TL" lon="33.750000" lat="34.307144" />
+<CalibrationPoint corner="BR" lon="36.562500" lat="27.059126" />
+<CalibrationPoint corner="TR" lon="36.562500" lat="34.307144" />
+<CalibrationPoint corner="BL" lon="33.750000" lat="27.059126" />
+</CalibrationPoints>
+</MapCalibration>
+</OruxTracker>
+<OruxTracker xmlns="http://oruxtracker.com/app/res/calibration"
+ versionCode="2.1">
+<MapCalibration layers="false" layerLevel="8">
+<MapName><![CDATA[Israel Hiking 08]]></MapName>
+<MapChunks xMax="1" yMax="3" datum="WGS84" projection="Mercator" img_height="512" img_width="512" file_name="Israel Hiking 08" />
+<MapDimensions height="1280" width="512" />
+<MapBounds minLat="28.304380682962783" maxLat="34.30714385628804" minLon="33.75" maxLon="36.5625" />
+<CalibrationPoints>
+<CalibrationPoint corner="TL" lon="33.750000" lat="34.307144" />
+<CalibrationPoint corner="BR" lon="36.562500" lat="28.304381" />
+<CalibrationPoint corner="TR" lon="36.562500" lat="34.307144" />
+<CalibrationPoint corner="BL" lon="33.750000" lat="28.304381" />
+</CalibrationPoints>
+</MapCalibration>
+</OruxTracker>
+<OruxTracker xmlns="http://oruxtracker.com/app/res/calibration"
+ versionCode="2.1">
+<MapCalibration layers="false" layerLevel="9">
+<MapName><![CDATA[Israel Hiking 09]]></MapName>
+<MapChunks xMax="2" yMax="4" datum="WGS84" projection="Mercator" img_height="512" img_width="512" file_name="Israel Hiking 09" />
+<MapDimensions height="2048" width="1024" />
+<MapBounds minLat="28.92163128242129" maxLat="33.72433966174761" minLon="33.75" maxLon="36.5625" />
+<CalibrationPoints>
+<CalibrationPoint corner="TL" lon="33.750000" lat="33.724340" />
+<CalibrationPoint corner="BR" lon="36.562500" lat="28.921631" />
+<CalibrationPoint corner="TR" lon="36.562500" lat="33.724340" />
+<CalibrationPoint corner="BL" lon="33.750000" lat="28.921631" />
+</CalibrationPoints>
+</MapCalibration>
+</OruxTracker>
+<OruxTracker xmlns="http://oruxtracker.com/app/res/calibration"
+ versionCode="2.1">
+<MapCalibration layers="false" layerLevel="10">
+<MapName><![CDATA[Israel Hiking 10]]></MapName>
+<MapChunks xMax="3" yMax="7" datum="WGS84" projection="Mercator" img_height="512" img_width="512" file_name="Israel Hiking 10" />
+<MapDimensions height="3584" width="1536" />
+<MapBounds minLat="29.22889003019423" maxLat="33.43144133557529" minLon="34.1015625" maxLon="36.2109375" />
+<CalibrationPoints>
+<CalibrationPoint corner="TL" lon="34.101563" lat="33.431441" />
+<CalibrationPoint corner="BR" lon="36.210938" lat="29.228890" />
+<CalibrationPoint corner="TR" lon="36.210938" lat="33.431441" />
+<CalibrationPoint corner="BL" lon="34.101563" lat="29.228890" />
+</CalibrationPoints>
+</MapCalibration>
+</OruxTracker>
+<OruxTracker xmlns="http://oruxtracker.com/app/res/calibration"
+ versionCode="2.1">
+<MapCalibration layers="false" layerLevel="11">
+<MapName><![CDATA[Israel Hiking 11]]></MapName>
+<MapChunks xMax="6" yMax="14" datum="WGS84" projection="Mercator" img_height="512" img_width="512" file_name="Israel Hiking 11" />
+<MapDimensions height="7168" width="2816" />
+<MapBounds minLat="29.22889003019423" maxLat="33.43144133557529" minLon="34.1015625" maxLon="36.03515625" />
+<CalibrationPoints>
+<CalibrationPoint corner="TL" lon="34.101563" lat="33.431441" />
+<CalibrationPoint corner="BR" lon="36.035156" lat="29.228890" />
+<CalibrationPoint corner="TR" lon="36.035156" lat="33.431441" />
+<CalibrationPoint corner="BL" lon="34.101563" lat="29.228890" />
+</CalibrationPoints>
+</MapCalibration>
+</OruxTracker>
+<OruxTracker xmlns="http://oruxtracker.com/app/res/calibration"
+ versionCode="2.1">
+<MapCalibration layers="false" layerLevel="12">
+<MapName><![CDATA[Israel Hiking 12]]></MapName>
+<MapChunks xMax="11" yMax="27" datum="WGS84" projection="Mercator" img_height="512" img_width="512" file_name="Israel Hiking 12" />
+<MapDimensions height="13824" width="5376" />
+<MapBounds minLat="29.3055613255277" maxLat="33.358061612778876" minLon="34.1015625" maxLon="35.947265625" />
+<CalibrationPoints>
+<CalibrationPoint corner="TL" lon="34.101563" lat="33.358062" />
+<CalibrationPoint corner="BR" lon="35.947266" lat="29.305561" />
+<CalibrationPoint corner="TR" lon="35.947266" lat="33.358062" />
+<CalibrationPoint corner="BL" lon="34.101563" lat="29.305561" />
+</CalibrationPoints>
+</MapCalibration>
+</OruxTracker>
+<OruxTracker xmlns="http://oruxtracker.com/app/res/calibration"
+ versionCode="2.1">
+<MapCalibration layers="false" layerLevel="13">
+<MapName><![CDATA[Israel Hiking 13]]></MapName>
+<MapChunks xMax="21" yMax="54" datum="WGS84" projection="Mercator" img_height="512" img_width="512" file_name="Israel Hiking 13" />
+<MapDimensions height="27392" width="10496" />
+<MapBounds minLat="29.34387539941801" maxLat="33.358061612778876" minLon="34.1455078125" maxLon="35.947265625" />
+<CalibrationPoints>
+<CalibrationPoint corner="TL" lon="34.145508" lat="33.358062" />
+<CalibrationPoint corner="BR" lon="35.947266" lat="29.343875" />
+<CalibrationPoint corner="TR" lon="35.947266" lat="33.358062" />
+<CalibrationPoint corner="BL" lon="34.145508" lat="29.343875" />
+</CalibrationPoints>
+</MapCalibration>
+</OruxTracker>
+<OruxTracker xmlns="http://oruxtracker.com/app/res/calibration"
+ versionCode="2.1">
+<MapCalibration layers="false" layerLevel="14">
+<MapName><![CDATA[Israel Hiking 14]]></MapName>
+<MapChunks xMax="41" yMax="107" datum="WGS84" projection="Mercator" img_height="512" img_width="512" file_name="Israel Hiking 14" />
+<MapDimensions height="54528" width="20736" />
+<MapBounds minLat="29.363027037783755" maxLat="33.358061612778876" minLon="34.1455078125" maxLon="35.92529296875" />
+<CalibrationPoints>
+<CalibrationPoint corner="TL" lon="34.145508" lat="33.358062" />
+<CalibrationPoint corner="BR" lon="35.925293" lat="29.363027" />
+<CalibrationPoint corner="TR" lon="35.925293" lat="33.358062" />
+<CalibrationPoint corner="BL" lon="34.145508" lat="29.363027" />
+</CalibrationPoints>
+</MapCalibration>
+</OruxTracker>
+<OruxTracker xmlns="http://oruxtracker.com/app/res/calibration"
+ versionCode="2.1">
+<MapCalibration layers="false" layerLevel="15">
+<MapName><![CDATA[Israel Hiking 15]]></MapName>
+<MapChunks xMax="81" yMax="213" datum="WGS84" projection="Mercator" img_height="512" img_width="512" file_name="Israel Hiking 15" />
+<MapDimensions height="108800" width="41216" />
+<MapBounds minLat="29.372601506681402" maxLat="33.358061612778876" minLon="34.156494140625" maxLon="35.92529296875" />
+<CalibrationPoints>
+<CalibrationPoint corner="TL" lon="34.156494" lat="33.358062" />
+<CalibrationPoint corner="BR" lon="35.925293" lat="29.372602" />
+<CalibrationPoint corner="TR" lon="35.925293" lat="33.358062" />
+<CalibrationPoint corner="BL" lon="34.156494" lat="29.372602" />
+</CalibrationPoints>
+</MapCalibration>
+</OruxTracker>
+<OruxTracker xmlns="http://oruxtracker.com/app/res/calibration"
+ versionCode="2.1">
+<MapCalibration layers="false" layerLevel="16">
+<MapName><![CDATA[Israel Hiking 16]]></MapName>
+<MapChunks xMax="161" yMax="425" datum="WGS84" projection="Mercator" img_height="512" img_width="512" file_name="Israel Hiking 16" />
+<MapDimensions height="217344" width="82176" />
+<MapBounds minLat="29.372601506681402" maxLat="33.353473323421674" minLon="34.156494140625" maxLon="35.9197998046875" />
+<CalibrationPoints>
+<CalibrationPoint corner="TL" lon="34.156494" lat="33.353473" />
+<CalibrationPoint corner="BR" lon="35.919800" lat="29.372602" />
+<CalibrationPoint corner="TR" lon="35.919800" lat="33.353473" />
+<CalibrationPoint corner="BL" lon="34.156494" lat="29.372602" />
+</CalibrationPoints>
+</MapCalibration>
+</OruxTracker>
+</MapCalibration>
+</OruxTracker>

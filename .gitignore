@@ -1,0 +1,5 @@
+# Large binary files
+israel-hiking-map/OruxMapsImages.db
+
+# OS files
+.DS_Store
