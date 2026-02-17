@@ -5,12 +5,17 @@ import { TILE_SERVER_URL } from '../constants/mapConfig';
 import { getDatabase } from '../storage/database';
 
 const TILES_BASE = `${FileSystem.documentDirectory}tiles/`;
-const CONCURRENT_DOWNLOADS = 6;
+const CONCURRENT_DOWNLOADS = 40;
+const MAX_RETRIES = 3;
+const RETRY_DELAY_MS = 500;
 
 type ProgressCallback = (regionId: string, progress: number) => void;
 
 // Track cancelled downloads so in-flight requests can bail out
 const cancelledDownloads = new Set<string>();
+
+// Cache of directories we've already created this session to avoid redundant getInfoAsync calls
+const createdDirs = new Set<string>();
 
 /**
  * Convert longitude to tile X coordinate at a given zoom level.
@@ -84,12 +89,15 @@ function tileUrl(z: number, x: number, y: number): string {
 
 /**
  * Ensure a directory exists, creating intermediates as needed.
+ * Caches created directories in-memory to avoid redundant filesystem calls.
  */
 async function ensureDir(dirUri: string): Promise<void> {
+  if (createdDirs.has(dirUri)) return;
   const info = await FileSystem.getInfoAsync(dirUri);
   if (!info.exists) {
     await FileSystem.makeDirectoryAsync(dirUri, { intermediates: true });
   }
+  createdDirs.add(dirUri);
 }
 
 /**
@@ -119,30 +127,47 @@ export function getRegionsWithStatus(): MapRegion[] {
 }
 
 /**
- * Download a single tile, skipping if it already exists on disk.
+ * Sleep helper for retry backoff.
+ */
+function sleep(ms: number): Promise<void> {
+  return new Promise(resolve => setTimeout(resolve, ms));
+}
+
+/**
+ * Download a single tile with retry logic. When resuming is true, checks if
+ * the file already exists first; otherwise skips the existence check for speed.
  */
 async function downloadTile(
   regionId: string,
   tile: TileCoord,
+  resuming: boolean,
 ): Promise<boolean> {
   const destUri = tileFileUri(regionId, tile.z, tile.x, tile.y);
 
-  const info = await FileSystem.getInfoAsync(destUri);
-  if (info.exists) {
-    return true; // Already cached
+  if (resuming) {
+    const info = await FileSystem.getInfoAsync(destUri);
+    if (info.exists) {
+      return true; // Already cached
+    }
   }
 
-  // Ensure parent directory exists
+  // Ensure parent directory exists (cached after first call per path)
   const parentUri = `${TILES_BASE}${regionId}/${tile.z}/${tile.x}/`;
   await ensureDir(parentUri);
 
   const url = tileUrl(tile.z, tile.x, tile.y);
-  try {
-    await FileSystem.downloadAsync(url, destUri);
-    return true;
-  } catch {
-    return false;
+  for (let attempt = 0; attempt < MAX_RETRIES; attempt++) {
+    try {
+      await FileSystem.downloadAsync(url, destUri);
+      return true;
+    } catch {
+      if (attempt < MAX_RETRIES - 1) {
+        // Exponential backoff: 500ms, 1000ms, 2000ms
+        await sleep(RETRY_DELAY_MS * Math.pow(2, attempt));
+      }
+    }
   }
+  return false;
 }
 
 /**
@@ -164,6 +189,11 @@ export async function downloadRegion(
   const totalTiles = tiles.length;
   let completedTiles = 0;
   let failedTiles = 0;
+  let lastReportedProgress = -1;
+
+  // Detect if this is a resume (region dir already has tiles) vs fresh download
+  const regionInfo = await FileSystem.getInfoAsync(regionDirUri(regionId));
+  const resuming = regionInfo.exists && regionInfo.isDirectory;
 
   updateRegionStatus(regionId, 'downloading', 0);
 
@@ -178,7 +208,7 @@ export async function downloadRegion(
 
     const batch = tiles.slice(i, i + CONCURRENT_DOWNLOADS);
     const results = await Promise.allSettled(
-      batch.map(tile => downloadTile(regionId, tile)),
+      batch.map(tile => downloadTile(regionId, tile, resuming)),
     );
 
     for (const result of results) {
@@ -188,9 +218,13 @@ export async function downloadRegion(
       completedTiles++;
     }
 
+    // Throttle DB writes and progress callbacks to every 1% change
     const progress = Math.round((completedTiles / totalTiles) * 100);
-    updateRegionStatus(regionId, 'downloading', progress);
-    onProgress?.(regionId, progress);
+    if (progress > lastReportedProgress) {
+      lastReportedProgress = progress;
+      updateRegionStatus(regionId, 'downloading', progress);
+      onProgress?.(regionId, progress);
+    }
 
     i += CONCURRENT_DOWNLOADS;
   }
