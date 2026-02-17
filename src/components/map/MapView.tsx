@@ -1,7 +1,8 @@
-import React, { useRef, useCallback } from 'react';
+import React, { useRef, useCallback, useMemo } from 'react';
 import { StyleSheet } from 'react-native';
-import MapLibreGL from '@maplibre/maplibre-react-native';
+import MapLibreGL, { type CameraRef } from '@maplibre/maplibre-react-native';
 import type { MapRegion } from '../../types';
+import { getTilesDir } from '../../services/tileService';
 
 const ISRAEL_CENTER: [number, number] = [34.8, 31.5]; // [lon, lat]
 const DEFAULT_ZOOM = 9;
@@ -19,6 +20,7 @@ interface MapViewProps {
   offlineRegions?: MapRegion[];
   children?: React.ReactNode;
   onRegionDidChange?: (feature: GeoJSON.Feature) => void;
+  cameraRef?: React.RefObject<CameraRef | null>;
 }
 
 function MapView({
@@ -28,12 +30,15 @@ function MapView({
   offlineRegions,
   children,
   onRegionDidChange,
+  cameraRef: externalCameraRef,
 }: MapViewProps) {
-  const mapRef = useRef<MapLibreGL.MapView>(null);
-  const cameraRef = useRef<MapLibreGL.Camera>(null);
+  const mapRef = useRef(null);
+  const internalCameraRef = useRef<CameraRef>(null);
+  const cameraRef = externalCameraRef ?? internalCameraRef;
 
-  const activeOfflineRegion = offlineRegions?.find(
-    (r) => r.status === 'downloaded' && r.localFilePath,
+  const downloadedRegions = useMemo(
+    () => offlineRegions?.filter((r) => r.status === 'downloaded' && r.localFilePath) ?? [],
+    [offlineRegions],
   );
 
   const handleRegionDidChange = useCallback(
@@ -54,44 +59,49 @@ function MapView({
       <MapLibreGL.Camera
         ref={cameraRef}
         defaultSettings={{
-          centerCoordinate,
-          zoomLevel,
+          centerCoordinate: ISRAEL_CENTER,
+          zoomLevel: DEFAULT_ZOOM,
         }}
+        centerCoordinate={centerCoordinate}
+        zoomLevel={zoomLevel}
         heading={bearing}
         minZoomLevel={MIN_ZOOM}
         maxZoomLevel={MAX_ZOOM}
         animationDuration={300}
       />
 
-      {activeOfflineRegion?.localFilePath ? (
+      {/* Always show online tiles as the base layer */}
+      <MapLibreGL.RasterSource
+        id="israelHikingOnline"
+        tileUrlTemplates={[ONLINE_TILE_URL]}
+        tileSize={TILE_SIZE}
+        minZoomLevel={MIN_ZOOM}
+        maxZoomLevel={MAX_ZOOM}
+      >
+        <MapLibreGL.RasterLayer
+          id="hikingTilesOnline"
+          sourceID="israelHikingOnline"
+        />
+      </MapLibreGL.RasterSource>
+
+      {/* Overlay downloaded region tiles on top (they take priority when available) */}
+      {downloadedRegions.map((region) => (
         <MapLibreGL.RasterSource
-          id="israelHikingOffline"
+          key={region.id}
+          id={`offline-${region.id}`}
           tileUrlTemplates={[
-            `mbtiles:///${activeOfflineRegion.localFilePath}`,
+            `${getTilesDir()}/${region.id}/{z}/{x}/{y}.png`,
           ]}
           tileSize={TILE_SIZE}
           minZoomLevel={MIN_ZOOM}
           maxZoomLevel={MAX_ZOOM}
         >
           <MapLibreGL.RasterLayer
-            id="hikingTilesOffline"
-            sourceID="israelHikingOffline"
+            id={`offlineLayer-${region.id}`}
+            sourceID={`offline-${region.id}`}
           />
         </MapLibreGL.RasterSource>
-      ) : (
-        <MapLibreGL.RasterSource
-          id="israelHikingOnline"
-          tileUrlTemplates={[ONLINE_TILE_URL]}
-          tileSize={TILE_SIZE}
-          minZoomLevel={MIN_ZOOM}
-          maxZoomLevel={MAX_ZOOM}
-        >
-          <MapLibreGL.RasterLayer
-            id="hikingTilesOnline"
-            sourceID="israelHikingOnline"
-          />
-        </MapLibreGL.RasterSource>
-      )}
+      ))}
 
       {children}
     </MapLibreGL.MapView>

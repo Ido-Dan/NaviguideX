@@ -36,7 +36,6 @@ export interface MapRegion {
   name: string;
   boundingBox: BoundingBox;
   zoomRange: { min: number; max: number };
-  downloadUrl: string;
   localFilePath?: string;
   fileSizeBytes: number;
   status: 'not_downloaded' | 'downloading' | 'downloaded';

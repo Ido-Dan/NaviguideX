@@ -7,12 +7,14 @@ interface MapDownloadSectionProps {
   regions: MapRegion[];
   onDownloadRegion: (regionId: string) => void;
   onDeleteRegion: (regionId: string) => void;
+  onCancelDownload?: (regionId: string) => void;
 }
 
 export function MapDownloadSection({
   regions,
   onDownloadRegion,
   onDeleteRegion,
+  onCancelDownload,
 }: MapDownloadSectionProps) {
   return (
     <View style={styles.section}>
@@ -27,6 +29,7 @@ export function MapDownloadSection({
           region={region}
           onDownload={() => onDownloadRegion(region.id)}
           onDelete={() => onDeleteRegion(region.id)}
+          onCancel={onCancelDownload ? () => onCancelDownload(region.id) : undefined}
         />
       ))}
 

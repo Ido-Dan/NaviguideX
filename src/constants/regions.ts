@@ -1,8 +1,5 @@
 import { MapRegion } from '../types';
 
-// Base URL placeholder for hosted MBTiles files
-const MBTILES_BASE_URL = 'https://tiles.naviguidex.app/regions';
-
 export const REGIONS: MapRegion[] = [
   {
     id: 'north',
@@ -14,8 +11,7 @@ export const REGIONS: MapRegion[] = [
       maxLon: 35.9,
     },
     zoomRange: { min: 7, max: 16 },
-    downloadUrl: `${MBTILES_BASE_URL}/north.mbtiles`,
-    fileSizeBytes: 1_000_000_000,
+    fileSizeBytes: 1_300_000_000, // ~64k tiles * ~20KB each
     status: 'not_downloaded',
     downloadProgress: 0,
   },
@@ -29,8 +25,7 @@ export const REGIONS: MapRegion[] = [
       maxLon: 35.6,
     },
     zoomRange: { min: 7, max: 16 },
-    downloadUrl: `${MBTILES_BASE_URL}/center.mbtiles`,
-    fileSizeBytes: 800_000_000,
+    fileSizeBytes: 1_500_000_000, // ~74k tiles * ~20KB each
     status: 'not_downloaded',
     downloadProgress: 0,
   },
@@ -44,8 +39,7 @@ export const REGIONS: MapRegion[] = [
       maxLon: 35.5,
     },
     zoomRange: { min: 7, max: 16 },
-    downloadUrl: `${MBTILES_BASE_URL}/south.mbtiles`,
-    fileSizeBytes: 1_000_000_000,
+    fileSizeBytes: 2_400_000_000, // ~121k tiles * ~20KB each
     status: 'not_downloaded',
     downloadProgress: 0,
   },

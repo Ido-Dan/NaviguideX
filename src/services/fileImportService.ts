@@ -1,5 +1,5 @@
-import { pick } from '@react-native-documents/picker';
-import * as FileSystem from 'expo-file-system';
+import { pick, isErrorWithCode, errorCodes } from '@react-native-documents/picker';
+import * as FileSystem from 'expo-file-system/legacy';
 import { parseGpx } from './gpxParser';
 import { Route } from '../types';
 
@@ -11,22 +11,21 @@ export async function importGpxFile(): Promise<Route | null> {
   let result;
   try {
     [result] = await pick({
-      type: ['public.xml', 'org.topografix.gpx'],
-      copyTo: 'cachesDirectory',
+      type: ['public.xml', 'public.data'],
     });
-  } catch (err: any) {
+  } catch (err: unknown) {
     // User cancelled the picker
-    if (err?.code === 'DOCUMENT_PICKER_CANCELED' || /cancel/i.test(err?.message)) {
+    if (isErrorWithCode(err) && err.code === errorCodes.OPERATION_CANCELED) {
       return null;
     }
     throw err;
   }
 
-  if (!result || !result.fileCopyUri) {
+  if (!result || !result.uri) {
     return null;
   }
 
-  const fileUri = result.fileCopyUri;
+  const fileUri = result.uri;
   const fileName = result.name || 'unknown.gpx';
 
   const gpxContent = await FileSystem.readAsStringAsync(

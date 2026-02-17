@@ -6,9 +6,10 @@ interface RegionCardProps {
   region: MapRegion;
   onDownload: () => void;
   onDelete: () => void;
+  onCancel?: () => void;
 }
 
-export function RegionCard({ region, onDownload, onDelete }: RegionCardProps) {
+export function RegionCard({ region, onDownload, onDelete, onCancel }: RegionCardProps) {
   const sizeLabel = region.fileSizeBytes >= 1_000_000_000
     ? `~${(region.fileSizeBytes / 1_000_000_000).toFixed(1)} GB`
     : `~${Math.round(region.fileSizeBytes / 1_000_000)} MB`;
@@ -55,6 +56,15 @@ export function RegionCard({ region, onDownload, onDelete }: RegionCardProps) {
               ]}
             />
           </View>
+          {onCancel && (
+            <TouchableOpacity
+              onPress={onCancel}
+              style={styles.cancelButton}
+              activeOpacity={0.7}
+            >
+              <Text style={styles.cancelButtonText}>Cancel</Text>
+            </TouchableOpacity>
+          )}
         </View>
       )}
 
@@ -138,6 +148,18 @@ const styles = StyleSheet.create({
   deleteButtonText: {
     color: '#E53935',
     fontSize: 14,
+    fontWeight: '600',
+  },
+  cancelButton: {
+    marginTop: 8,
+    backgroundColor: 'rgba(229,57,53,0.1)',
+    paddingVertical: 8,
+    borderRadius: 10,
+    alignItems: 'center',
+  },
+  cancelButtonText: {
+    color: '#E53935',
+    fontSize: 13,
     fontWeight: '600',
   },
   progressContainer: {

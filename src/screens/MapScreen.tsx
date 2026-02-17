@@ -1,7 +1,7 @@
 import React, { useCallback, useEffect, useRef, useState } from 'react';
 import { View, Alert, StyleSheet } from 'react-native';
 import BottomSheet from '@gorhom/bottom-sheet';
-import MapLibreGL from '@maplibre/maplibre-react-native';
+import MapLibreGL, { type CameraRef } from '@maplibre/maplibre-react-native';
 import { activateKeepAwakeAsync, deactivateKeepAwake } from 'expo-keep-awake';
 import type { NativeStackScreenProps } from '@react-navigation/native-stack';
 import type { Route } from '../types';
@@ -40,7 +40,7 @@ export function ConnectedMapScreen({ navigation: screenNav }: MapScreenNavProps)
   } = useNavigation();
 
   const bottomSheetRef = useRef<BottomSheet>(null);
-  const cameraRef = useRef<MapLibreGL.Camera>(null);
+  const cameraRef = useRef<CameraRef>(null);
   const [sheetIndex, setSheetIndex] = useState(2); // Start expanded per design spec
 
   // Start GPS tracking on mount
@@ -140,6 +140,7 @@ export function ConnectedMapScreen({ navigation: screenNav }: MapScreenNavProps)
     <View style={styles.container}>
       {/* Full-screen MapLibre map */}
       <MapView
+        cameraRef={cameraRef}
         bearing={mapBearing}
         centerCoordinate={centerCoordinate}
         offlineRegions={offlineRegions}

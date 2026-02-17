@@ -19,6 +19,7 @@ import {
   getRegionsWithStatus,
   downloadRegion,
   deleteRegion,
+  cancelDownload,
 } from '../services/tileService';
 import { MapDownloadSection } from '../components/settings/MapDownloadSection';
 
@@ -89,6 +90,10 @@ export function ConnectedSettingsScreen({
     [],
   );
 
+  const handleCancelDownload = useCallback((regionId: string) => {
+    cancelDownload(regionId);
+  }, []);
+
   const handleDeleteRegion = useCallback(async (regionId: string) => {
     try {
       await deleteRegion(regionId);
@@ -124,6 +129,7 @@ export function ConnectedSettingsScreen({
           regions={regions}
           onDownloadRegion={handleDownloadRegion}
           onDeleteRegion={handleDeleteRegion}
+          onCancelDownload={handleCancelDownload}
         />
 
         {/* Units */}
