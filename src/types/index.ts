@@ -38,7 +38,7 @@ export interface MapRegion {
   zoomRange: { min: number; max: number };
   localFilePath?: string;
   fileSizeBytes: number;
-  status: 'not_downloaded' | 'downloading' | 'downloaded';
+  status: 'not_downloaded' | 'downloading' | 'downloaded' | 'queued' | 'paused';
   downloadProgress: number;
 }
 

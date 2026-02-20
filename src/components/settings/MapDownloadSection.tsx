@@ -8,6 +8,7 @@ interface MapDownloadSectionProps {
   onDownloadRegion: (regionId: string) => void;
   onDeleteRegion: (regionId: string) => void;
   onCancelDownload?: (regionId: string) => void;
+  networkAvailable?: boolean;
 }
 
 export function MapDownloadSection({
@@ -15,13 +16,26 @@ export function MapDownloadSection({
   onDownloadRegion,
   onDeleteRegion,
   onCancelDownload,
+  networkAvailable = true,
 }: MapDownloadSectionProps) {
+  const isDownloading = regions.some(
+    r => r.status === 'downloading' || r.status === 'queued' || r.status === 'paused',
+  );
+
   return (
     <View style={styles.section}>
       <Text style={styles.title}>Offline Maps</Text>
       <Text style={styles.subtitle}>
         Download map regions to use offline during trips
       </Text>
+
+      {!networkAvailable && isDownloading && (
+        <View style={styles.networkBanner}>
+          <Text style={styles.networkBannerText}>
+            No network — downloads paused
+          </Text>
+        </View>
+      )}
 
       {regions.map((region) => (
         <RegionCard
@@ -65,5 +79,17 @@ const styles = StyleSheet.create({
     color: '#7A7267',
     textAlign: 'center',
     marginTop: 8,
+  },
+  networkBanner: {
+    backgroundColor: '#FFF3E0',
+    borderRadius: 8,
+    padding: 10,
+    marginBottom: 12,
+  },
+  networkBannerText: {
+    fontSize: 13,
+    color: '#E65100',
+    textAlign: 'center',
+    fontWeight: '500',
   },
 });

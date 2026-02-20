@@ -2,13 +2,12 @@ import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react'
 import { View, Alert, StyleSheet } from 'react-native';
 import BottomSheet from '@gorhom/bottom-sheet';
 import MapLibreGL, { type CameraRef } from '@maplibre/maplibre-react-native';
-import { activateKeepAwakeAsync, deactivateKeepAwake } from 'expo-keep-awake';
 import type { NativeStackScreenProps } from '@react-navigation/native-stack';
 import type { Route } from '../types';
 import { useApp } from '../context/AppProvider';
 import { useNavigation } from '../context/NavigationProvider';
+import { useDownload } from '../context/DownloadProvider';
 import { importGpxFile } from '../services/fileImportService';
-import { getRegionsWithStatus } from '../services/tileService';
 import MapView from '../components/map/MapView';
 import RouteOverlay from '../components/map/RouteOverlay';
 import WaypointMarkers from '../components/map/WaypointMarkers';
@@ -53,20 +52,8 @@ export function ConnectedMapScreen({ navigation: screenNav }: MapScreenNavProps)
     };
   }, [startGpsTracking, stopGpsTracking]);
 
-  // Keep screen awake when a route is active
-  useEffect(() => {
-    if (activeRoute) {
-      activateKeepAwakeAsync('active-route');
-    } else {
-      deactivateKeepAwake('active-route');
-    }
-    return () => {
-      deactivateKeepAwake('active-route');
-    };
-  }, [activeRoute]);
-
-  // Get offline regions for MapView
-  const offlineRegions = useRef(getRegionsWithStatus()).current;
+  // Get live offline regions from download context
+  const { regions: offlineRegions } = useDownload();
 
   // Handlers
   const handleRouteSelect = useCallback(
@@ -111,6 +98,17 @@ export function ConnectedMapScreen({ navigation: screenNav }: MapScreenNavProps)
       setFollowingUser(true);
     }
   }, [userPosition, setFollowingUser]);
+
+  const handleRoutePress = useCallback(() => {
+    if (activeRoute && activeRoute.trackPoints.length > 0) {
+      const first = activeRoute.trackPoints[0];
+      cameraRef.current?.setCamera({
+        centerCoordinate: [first.lon, first.lat],
+        animationDuration: 500,
+      });
+      setFollowingUser(false);
+    }
+  }, [activeRoute, setFollowingUser]);
 
   const handleOpenSettings = useCallback(() => {
     screenNav.navigate('Settings');
@@ -157,7 +155,7 @@ export function ConnectedMapScreen({ navigation: screenNav }: MapScreenNavProps)
       >
         {/* Route line overlay */}
         {activeRoute && activeRoute.trackPoints.length >= 2 && (
-          <RouteOverlay trackPoints={activeRoute.trackPoints} />
+          <RouteOverlay trackPoints={activeRoute.trackPoints} onPress={handleRoutePress} />
         )}
 
         {/* Waypoint markers */}

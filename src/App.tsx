@@ -1,10 +1,12 @@
-import React, { useState, useCallback } from 'react';
+import React, { useState, useCallback, useEffect } from 'react';
 import { StatusBar } from 'react-native';
 import { GestureHandlerRootView } from 'react-native-gesture-handler';
 import { SafeAreaProvider } from 'react-native-safe-area-context';
 import { NavigationContainer } from '@react-navigation/native';
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
+import { activateKeepAwakeAsync } from 'expo-keep-awake';
 import { AppProvider } from './context/AppProvider';
+import { DownloadProvider } from './context/DownloadProvider';
 import { NavigationProvider } from './context/NavigationProvider';
 import { ConnectedMapScreen } from './screens/MapScreen';
 import { ConnectedSettingsScreen } from './screens/SettingsScreen';
@@ -20,6 +22,11 @@ const Stack = createNativeStackNavigator<RootStackParamList>();
 export default function App() {
   const [splashDone, setSplashDone] = useState(false);
 
+  // Keep screen awake globally — this is a navigation app
+  useEffect(() => {
+    activateKeepAwakeAsync('app-global');
+  }, []);
+
   const handleSplashComplete = useCallback(() => {
     setSplashDone(true);
   }, []);
@@ -32,6 +39,7 @@ export default function App() {
     <GestureHandlerRootView style={{ flex: 1 }}>
       <SafeAreaProvider>
         <AppProvider>
+          <DownloadProvider>
           <NavigationProvider>
             <StatusBar barStyle="light-content" />
             <NavigationContainer>
@@ -48,6 +56,7 @@ export default function App() {
               </Stack.Navigator>
             </NavigationContainer>
           </NavigationProvider>
+          </DownloadProvider>
         </AppProvider>
       </SafeAreaProvider>
     </GestureHandlerRootView>

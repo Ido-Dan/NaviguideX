@@ -1,4 +1,4 @@
-import React, { useState, useCallback, useEffect } from 'react';
+import React, { useCallback } from 'react';
 import {
   View,
   Text,
@@ -13,14 +13,8 @@ import {
 
 const naviguideLogo = require('../assets/naviguide_no_background.png');
 import type { NativeStackScreenProps } from '@react-navigation/native-stack';
-import type { MapRegion } from '../types';
 import { useApp } from '../context/AppProvider';
-import {
-  getRegionsWithStatus,
-  downloadRegion,
-  deleteRegion,
-  cancelDownload,
-} from '../services/tileService';
+import { useDownload } from '../context/DownloadProvider';
 import { MapDownloadSection } from '../components/settings/MapDownloadSection';
 
 type SettingsScreenNavProps = NativeStackScreenProps<
@@ -36,16 +30,7 @@ export function ConnectedSettingsScreen({
   navigation: screenNav,
 }: SettingsScreenNavProps) {
   const { settings, updateSettings } = useApp();
-  const [regions, setRegions] = useState<MapRegion[]>([]);
-
-  // Load region status on mount
-  useEffect(() => {
-    try {
-      setRegions(getRegionsWithStatus());
-    } catch {
-      // Database may not have map_regions yet on first load
-    }
-  }, []);
+  const { regions, downloadRegion, cancelDownload, deleteRegion, networkAvailable } = useDownload();
 
   const handleClose = useCallback(() => {
     screenNav.goBack();
@@ -59,52 +44,26 @@ export function ConnectedSettingsScreen({
   );
 
   const handleDownloadRegion = useCallback(
-    async (regionId: string) => {
-      // Update UI to show downloading state
-      setRegions((prev) =>
-        prev.map((r) =>
-          r.id === regionId
-            ? { ...r, status: 'downloading' as const, downloadProgress: 0 }
-            : r,
-        ),
-      );
-
-      try {
-        await downloadRegion(regionId, (_id, progress) => {
-          setRegions((prev) =>
-            prev.map((r) =>
-              r.id === regionId ? { ...r, downloadProgress: progress } : r,
-            ),
-          );
-        });
-        // Refresh status from database after download completes
-        setRegions(getRegionsWithStatus());
-      } catch (error: any) {
-        Alert.alert(
-          'Download Error',
-          error.message || 'Failed to download region',
-        );
-        setRegions(getRegionsWithStatus());
-      }
+    (regionId: string) => {
+      downloadRegion(regionId);
     },
-    [],
+    [downloadRegion],
   );
 
   const handleCancelDownload = useCallback((regionId: string) => {
     cancelDownload(regionId);
-  }, []);
+  }, [cancelDownload]);
 
   const handleDeleteRegion = useCallback(async (regionId: string) => {
     try {
       await deleteRegion(regionId);
-      setRegions(getRegionsWithStatus());
     } catch (error: any) {
       Alert.alert(
         'Delete Error',
         error.message || 'Failed to delete region',
       );
     }
-  }, []);
+  }, [deleteRegion]);
 
   return (
     <SafeAreaView style={styles.safeArea}>
@@ -130,6 +89,7 @@ export function ConnectedSettingsScreen({
           onDownloadRegion={handleDownloadRegion}
           onDeleteRegion={handleDeleteRegion}
           onCancelDownload={handleCancelDownload}
+          networkAvailable={networkAvailable}
         />
 
         {/* Units */}

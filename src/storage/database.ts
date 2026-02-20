@@ -19,6 +19,7 @@ export function initDatabase(): void {
 
   // Run migrations
   createTables(db);
+  runMigrations(db);
 }
 
 function createTables(database: NitroSQLiteConnection): void {
@@ -55,6 +56,51 @@ function createTables(database: NitroSQLiteConnection): void {
       downloadProgress REAL NOT NULL DEFAULT 0
     );
   `);
+}
+
+function getDbVersion(database: NitroSQLiteConnection): number {
+  const result = database.execute(
+    "SELECT value FROM settings WHERE key = '_db_version'",
+  );
+  const rows = result.rows?._array ?? [];
+  return rows.length > 0 ? parseInt(rows[0].value as string, 10) : 0;
+}
+
+function setDbVersion(database: NitroSQLiteConnection, version: number): void {
+  database.execute(
+    "INSERT OR REPLACE INTO settings (key, value) VALUES ('_db_version', ?)",
+    [String(version)],
+  );
+}
+
+function runMigrations(database: NitroSQLiteConnection): void {
+  const currentVersion = getDbVersion(database);
+
+  if (currentVersion < 1) {
+    // Add checkpoint columns for resumable downloads
+    try {
+      database.execute(
+        'ALTER TABLE map_regions ADD COLUMN completedTileIndex INTEGER NOT NULL DEFAULT 0',
+      );
+    } catch {
+      // Column may already exist
+    }
+    try {
+      database.execute(
+        'ALTER TABLE map_regions ADD COLUMN totalTiles INTEGER NOT NULL DEFAULT 0',
+      );
+    } catch {
+      // Column may already exist
+    }
+    try {
+      database.execute(
+        'ALTER TABLE map_regions ADD COLUMN userCancelled INTEGER NOT NULL DEFAULT 0',
+      );
+    } catch {
+      // Column may already exist
+    }
+    setDbVersion(database, 1);
+  }
 }
 
 export function closeDatabase(): void {

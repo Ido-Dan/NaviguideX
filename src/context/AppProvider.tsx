@@ -10,6 +10,7 @@ import { AppSettings, Route } from '../types';
 import { initDatabase } from '../storage/database';
 import { getSettings, saveSettings } from '../storage/settingsStorage';
 import { getAllRoutes, saveRoute, deleteRoute } from '../storage/routeStorage';
+import { initNetworkMonitoring, resumeIncompleteDownloads } from '../services/downloadManager';
 
 // State
 interface AppState {
@@ -94,6 +95,10 @@ export function AppProvider({ children }: AppProviderProps) {
     const settings = getSettings();
     const routes = getAllRoutes();
     dispatch({ type: 'INIT_COMPLETE', settings, routes });
+
+    // Start network monitoring and resume any interrupted downloads
+    initNetworkMonitoring();
+    resumeIncompleteDownloads();
   }, []);
 
   const updateSettings = useCallback((newSettings: Partial<AppSettings>) => {

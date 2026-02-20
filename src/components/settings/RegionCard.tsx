@@ -41,6 +41,22 @@ export function RegionCard({ region, onDownload, onDelete, onCancel }: RegionCar
         </TouchableOpacity>
       )}
 
+      {/* Queued state */}
+      {region.status === 'queued' && (
+        <View style={styles.progressContainer}>
+          <Text style={styles.queuedLabel}>Queued...</Text>
+          {onCancel && (
+            <TouchableOpacity
+              onPress={onCancel}
+              style={styles.cancelButton}
+              activeOpacity={0.7}
+            >
+              <Text style={styles.cancelButtonText}>Cancel</Text>
+            </TouchableOpacity>
+          )}
+        </View>
+      )}
+
       {/* Downloading progress */}
       {region.status === 'downloading' && (
         <View style={styles.progressContainer}>
@@ -52,6 +68,33 @@ export function RegionCard({ region, onDownload, onDelete, onCancel }: RegionCar
             <View
               style={[
                 styles.progressFill,
+                { width: `${region.downloadProgress}%` },
+              ]}
+            />
+          </View>
+          {onCancel && (
+            <TouchableOpacity
+              onPress={onCancel}
+              style={styles.cancelButton}
+              activeOpacity={0.7}
+            >
+              <Text style={styles.cancelButtonText}>Cancel</Text>
+            </TouchableOpacity>
+          )}
+        </View>
+      )}
+
+      {/* Paused state */}
+      {region.status === 'paused' && (
+        <View style={styles.progressContainer}>
+          <View style={styles.progressLabelRow}>
+            <Text style={styles.pausedLabel}>Paused</Text>
+            <Text style={styles.progressLabel}>{region.downloadProgress}%</Text>
+          </View>
+          <View style={styles.progressTrack}>
+            <View
+              style={[
+                styles.progressFillPaused,
                 { width: `${region.downloadProgress}%` },
               ]}
             />
@@ -174,6 +217,17 @@ const styles = StyleSheet.create({
     fontSize: 12,
     color: '#7A7267',
   },
+  queuedLabel: {
+    fontSize: 12,
+    color: '#F57C00',
+    fontWeight: '500',
+    marginBottom: 4,
+  },
+  pausedLabel: {
+    fontSize: 12,
+    color: '#F57C00',
+    fontWeight: '500',
+  },
   progressTrack: {
     height: 8,
     backgroundColor: '#FFFFFF',
@@ -183,6 +237,11 @@ const styles = StyleSheet.create({
   progressFill: {
     height: '100%',
     backgroundColor: '#4CAF50',
+    borderRadius: 4,
+  },
+  progressFillPaused: {
+    height: '100%',
+    backgroundColor: '#F57C00',
     borderRadius: 4,
   },
 });

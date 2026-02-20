@@ -7,9 +7,10 @@ const ROUTE_WIDTH = 4;
 
 interface RouteOverlayProps {
   trackPoints: TrackPoint[];
+  onPress?: () => void;
 }
 
-function RouteOverlay({ trackPoints }: RouteOverlayProps) {
+function RouteOverlay({ trackPoints, onPress }: RouteOverlayProps) {
   if (trackPoints.length < 2) {
     return null;
   }
@@ -26,7 +27,7 @@ function RouteOverlay({ trackPoints }: RouteOverlayProps) {
   };
 
   return (
-    <MapLibreGL.ShapeSource id="routeSource" shape={routeGeoJSON}>
+    <MapLibreGL.ShapeSource id="routeSource" shape={routeGeoJSON} onPress={onPress}>
       <MapLibreGL.LineLayer
         id="routeLine"
         style={{

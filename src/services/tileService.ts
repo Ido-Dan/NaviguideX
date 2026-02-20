@@ -9,11 +9,6 @@ const CONCURRENT_DOWNLOADS = 40;
 const MAX_RETRIES = 3;
 const RETRY_DELAY_MS = 500;
 
-type ProgressCallback = (regionId: string, progress: number) => void;
-
-// Track cancelled downloads so in-flight requests can bail out
-const cancelledDownloads = new Set<string>();
-
 // Cache of directories we've already created this session to avoid redundant getInfoAsync calls
 const createdDirs = new Set<string>();
 
@@ -35,7 +30,7 @@ function lat2tile(lat: number, zoom: number): number {
   );
 }
 
-interface TileCoord {
+export interface TileCoord {
   z: number;
   x: number;
   y: number;
@@ -44,7 +39,7 @@ interface TileCoord {
 /**
  * Calculate all tile coordinates needed for a bounding box and zoom range.
  */
-function calculateTiles(
+export function calculateTiles(
   bbox: BoundingBox,
   zoomRange: { min: number; max: number },
 ): TileCoord[] {
@@ -171,39 +166,27 @@ async function downloadTile(
 }
 
 /**
- * Download all tiles for a region with concurrency control.
+ * Download tiles for a region starting from a given index, reporting progress
+ * via onBatchComplete. Respects the AbortSignal to support cancellation.
  */
-export async function downloadRegion(
+export async function downloadTilesFromIndex(
   regionId: string,
-  onProgress?: ProgressCallback,
-): Promise<void> {
-  const region = REGIONS.find(r => r.id === regionId);
-  if (!region) {
-    throw new Error(`Unknown region: ${regionId}`);
-  }
-
-  cancelledDownloads.delete(regionId);
+  tiles: TileCoord[],
+  startIndex: number,
+  onBatchComplete: (completedIndex: number) => void,
+  signal: AbortSignal,
+): Promise<{ completedIndex: number; failed: number }> {
   await ensureDir(regionDirUri(regionId));
 
-  const tiles = calculateTiles(region.boundingBox, region.zoomRange);
-  const totalTiles = tiles.length;
-  let completedTiles = 0;
-  let failedTiles = 0;
-  let lastReportedProgress = -1;
+  let completedIndex = startIndex;
+  let failed = 0;
+  // Check if we're resuming (startIndex > 0 means some tiles exist)
+  const resuming = startIndex > 0;
 
-  // Detect if this is a resume (region dir already has tiles) vs fresh download
-  const regionInfo = await FileSystem.getInfoAsync(regionDirUri(regionId));
-  const resuming = regionInfo.exists && regionInfo.isDirectory;
-
-  updateRegionStatus(regionId, 'downloading', 0);
-
-  // Process tiles in batches for concurrency control
-  let i = 0;
-  while (i < totalTiles) {
-    if (cancelledDownloads.has(regionId)) {
-      cancelledDownloads.delete(regionId);
-      updateRegionStatus(regionId, 'not_downloaded', 0);
-      throw new Error('Download cancelled');
+  let i = startIndex;
+  while (i < tiles.length) {
+    if (signal.aborted) {
+      return { completedIndex, failed };
     }
 
     const batch = tiles.slice(i, i + CONCURRENT_DOWNLOADS);
@@ -213,39 +196,16 @@ export async function downloadRegion(
 
     for (const result of results) {
       if (result.status === 'rejected' || (result.status === 'fulfilled' && !result.value)) {
-        failedTiles++;
+        failed++;
       }
-      completedTiles++;
     }
 
-    // Throttle DB writes and progress callbacks to every 1% change
-    const progress = Math.round((completedTiles / totalTiles) * 100);
-    if (progress > lastReportedProgress) {
-      lastReportedProgress = progress;
-      updateRegionStatus(regionId, 'downloading', progress);
-      onProgress?.(regionId, progress);
-    }
-
+    completedIndex = i + batch.length;
+    onBatchComplete(completedIndex);
     i += CONCURRENT_DOWNLOADS;
   }
 
-  // Allow up to 5% tile failures (some tiles may be outside the actual map coverage)
-  const failureRate = failedTiles / totalTiles;
-  if (failureRate > 0.05) {
-    updateRegionStatus(regionId, 'not_downloaded', 0);
-    throw new Error(
-      `Download failed: ${failedTiles} of ${totalTiles} tiles could not be downloaded`,
-    );
-  }
-
-  updateRegionStatus(regionId, 'downloaded', 100, regionDirUri(regionId));
-}
-
-/**
- * Cancel an in-progress download for a region.
- */
-export function cancelDownload(regionId: string): void {
-  cancelledDownloads.add(regionId);
+  return { completedIndex, failed };
 }
 
 /**
@@ -280,7 +240,7 @@ export function getTilesDir(): string {
   return TILES_BASE;
 }
 
-function updateRegionStatus(
+export function updateRegionStatus(
   regionId: string,
   status: string,
   progress: number,
