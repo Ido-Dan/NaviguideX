@@ -1,47 +1,56 @@
-import React, { useEffect, useRef, useMemo } from 'react';
-import { View, Animated, StyleSheet } from 'react-native';
+import React, { useEffect } from 'react';
+import { View, StyleSheet } from 'react-native';
+import Animated, {
+  useSharedValue,
+  useAnimatedStyle,
+  withSpring,
+  withRepeat,
+  withSequence,
+  withTiming,
+} from 'react-native-reanimated';
 
 interface GPSMarkerProps {
-  /** Pre-animated rotation value — driven by the parent to avoid re-renders */
-  headingAnim: Animated.Value;
+  heading: number;
+  orientationMode: 'north-up' | 'heading-up';
 }
 
 export const GPSMarker = React.memo(function GPSMarker({
-  headingAnim,
+  heading,
+  orientationMode,
 }: GPSMarkerProps) {
-  const pulse = useRef(new Animated.Value(1)).current;
+  const rotation = useSharedValue(heading);
+  const pulse = useSharedValue(1);
 
   useEffect(() => {
-    const animation = Animated.loop(
-      Animated.sequence([
-        Animated.timing(pulse, {
-          toValue: 1.3,
-          duration: 1500,
-          useNativeDriver: true,
-        }),
-        Animated.timing(pulse, {
-          toValue: 1,
-          duration: 1500,
-          useNativeDriver: true,
-        }),
-      ]),
+    const targetRotation = orientationMode === 'north-up' ? heading : 0;
+    rotation.value = withSpring(targetRotation, {
+      damping: 10,
+      stiffness: 60,
+    });
+  }, [heading, orientationMode, rotation]);
+
+  useEffect(() => {
+    pulse.value = withRepeat(
+      withSequence(
+        withTiming(1.3, { duration: 1500 }),
+        withTiming(1, { duration: 1500 }),
+      ),
+      -1,
     );
-    animation.start();
-    return () => animation.stop();
   }, [pulse]);
 
-  const rotateInterpolation = useMemo(
-    () => headingAnim.interpolate({
-      inputRange: [-360, 360],
-      outputRange: ['-360deg', '360deg'],
-    }),
-    [headingAnim],
-  );
+  const arrowStyle = useAnimatedStyle(() => ({
+    transform: [{ rotate: `${rotation.value}deg` }],
+  }));
+
+  const glowStyle = useAnimatedStyle(() => ({
+    transform: [{ scale: pulse.value }],
+  }));
 
   return (
     <View style={styles.container} pointerEvents="none">
-      <Animated.View style={[styles.glow, { transform: [{ scale: pulse }] }]} />
-      <Animated.View style={[styles.arrowWrapper, { transform: [{ rotate: rotateInterpolation }] }]}>
+      <Animated.View style={[styles.glow, glowStyle]} />
+      <Animated.View style={[styles.arrowWrapper, arrowStyle]}>
         <View style={styles.arrow} />
       </Animated.View>
       <View style={styles.centerDot} />
