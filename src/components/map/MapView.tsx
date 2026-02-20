@@ -1,8 +1,19 @@
 import React, { useRef, useCallback, useMemo } from 'react';
 import { StyleSheet } from 'react-native';
-import MapLibreGL, { type CameraRef } from '@maplibre/maplibre-react-native';
+import MapLibreGL, { Logger, type CameraRef } from '@maplibre/maplibre-react-native';
 import type { MapRegion } from '../../types';
 import { getTilesDir } from '../../services/tileService';
+
+// Suppress MapLibre tile-loading errors (expected for missing offline tiles).
+// Returning true from the callback prevents the default red toast/console.error.
+Logger.setLogCallback(({ level, message }) => {
+  if (level === 'error' || level === 'warning') {
+    // Silently swallow tile/style errors — they're expected when
+    // offline tiles don't cover the full viewport or zoom range.
+    return true;
+  }
+  return false;
+});
 
 const ISRAEL_CENTER: [number, number] = [34.8, 31.5]; // [lon, lat]
 const DEFAULT_ZOOM = 9;
