@@ -14,7 +14,7 @@ import WaypointMarkers from '../components/map/WaypointMarkers';
 import { GPSMarker } from '../components/map/GPSMarker';
 import { CompassOverlay } from '../components/map/CompassOverlay';
 import { CenterOnMeButton } from '../components/ui/CenterOnMeButton';
-import { ActiveRouteBar } from '../components/ui/ActiveRouteBar';
+import { RoutesPill } from '../components/ui/RoutesPill';
 import { OverlayButton } from '../components/ui/OverlayButton';
 import { RouteBottomSheet } from '../components/routes/RouteBottomSheet';
 
@@ -40,7 +40,7 @@ export function ConnectedMapScreen({ navigation: screenNav }: MapScreenNavProps)
 
   const bottomSheetRef = useRef<BottomSheet>(null);
   const cameraRef = useRef<CameraRef>(null);
-  const [sheetIndex, setSheetIndex] = useState(2); // Start expanded per design spec
+  const [isSheetOpen, setIsSheetOpen] = useState(false);
 
   // Start GPS tracking on mount
   useEffect(() => {
@@ -53,13 +53,13 @@ export function ConnectedMapScreen({ navigation: screenNav }: MapScreenNavProps)
   }, [startGpsTracking, stopGpsTracking]);
 
   // Get live offline regions from download context
-  const { regions: offlineRegions } = useDownload();
+  const { regions: offlineRegions, networkAvailable } = useDownload();
 
   // Handlers
   const handleRouteSelect = useCallback(
     (route: Route) => {
       setActiveRoute(route);
-      bottomSheetRef.current?.snapToIndex(0);
+      bottomSheetRef.current?.close();
     },
     [setActiveRoute],
   );
@@ -114,12 +114,18 @@ export function ConnectedMapScreen({ navigation: screenNav }: MapScreenNavProps)
     screenNav.navigate('Settings');
   }, [screenNav]);
 
-  const handleSheetChange = useCallback(
-    (index: number) => {
-      setSheetIndex(index);
-    },
-    [],
-  );
+  const handleOpenSheet = useCallback(() => {
+    bottomSheetRef.current?.snapToIndex(0);
+    setIsSheetOpen(true);
+  }, []);
+
+  const handleSheetChange = useCallback((index: number) => {
+    setIsSheetOpen(index >= 0);
+  }, []);
+
+  const handleSheetClose = useCallback(() => {
+    setIsSheetOpen(false);
+  }, []);
 
   const handleRegionDidChange = useCallback((feature: GeoJSON.Feature) => {
     // Only stop following when the user physically pans/zooms the map
@@ -151,6 +157,7 @@ export function ConnectedMapScreen({ navigation: screenNav }: MapScreenNavProps)
         bearing={mapBearing}
         centerCoordinate={centerCoordinate}
         offlineRegions={offlineRegions}
+        networkAvailable={networkAvailable}
         onRegionDidChange={handleRegionDidChange}
       >
         {/* Route line overlay */}
@@ -204,10 +211,11 @@ export function ConnectedMapScreen({ navigation: screenNav }: MapScreenNavProps)
         isFollowingUser={isFollowingUser}
       />
 
-      {/* Active route bar (shown when route loaded and sheet collapsed) */}
-      {activeRoute && sheetIndex === 0 && (
-        <ActiveRouteBar
-          route={activeRoute}
+      {/* Routes pill (bottom-center) */}
+      {!isSheetOpen && (
+        <RoutesPill
+          activeRoute={activeRoute}
+          onOpenSheet={handleOpenSheet}
           onClearRoute={handleClearRoute}
         />
       )}
@@ -219,6 +227,7 @@ export function ConnectedMapScreen({ navigation: screenNav }: MapScreenNavProps)
         onRouteSelect={handleRouteSelect}
         onRouteDelete={handleRouteDelete}
         onImportGPX={handleImportGPX}
+        onClose={handleSheetClose}
         sheetRef={bottomSheetRef}
         onChange={handleSheetChange}
       />

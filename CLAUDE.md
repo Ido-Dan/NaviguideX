@@ -52,6 +52,12 @@ An offroad 4x4 navigation app for iOS, built with React Native + TypeScript. Rev
 - The leader stays available for user interaction, testing, and coordination at all times.
 - Use dedicated agents for: codebase exploration, writing plans, implementing features, debugging issues.
 
+### Branching
+- **Always** create a new branch before starting any task (bugfix, feature, refactor). Never work directly on `main`.
+- Branch naming: `fix/...` for bugfixes, `feat/...` for features (e.g., `fix/info-plist-privacy`, `feat/download-queue`).
+- Merge to main only after the fix is verified.
+- Push both the branch and main so changes can be examined per-branch.
+
 ### Communication
 - If unclear on requirements, ask the lead. Do not guess.
 - When done with your task, mark it completed and message the lead with a summary of what you built.

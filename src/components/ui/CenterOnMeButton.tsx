@@ -30,7 +30,7 @@ const styles = StyleSheet.create({
   container: {
     position: 'absolute',
     right: 16,
-    bottom: 130,
+    bottom: 100,
     zIndex: 30,
   },
   dimmed: {

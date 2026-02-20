@@ -21,34 +21,57 @@ export function RouteCard({ route, isActive, onSelect, onDelete }: RouteCardProp
       activeOpacity={0.7}
       style={[styles.card, isActive && styles.cardActive]}
     >
-      {/* Active indicator bar */}
-      {isActive && <View style={styles.activeIndicator} />}
-
       <View style={styles.row}>
         <View style={styles.info}>
           <Text style={styles.name} numberOfLines={1}>
             {route.name}
           </Text>
 
+          {/* Row 1: distance + waypoints */}
           <View style={styles.metaRow}>
-            <Text style={styles.metaText}>{formattedDistance}</Text>
-            <View style={styles.metaDot} />
-            <Text style={styles.metaText}>{route.waypointCount} waypoints</Text>
-            <View style={styles.metaDot} />
-            <Text style={styles.metaText}>{route.importDate}</Text>
+            {/* Triangle / distance icon */}
+            <View style={styles.metaItem}>
+              <View style={styles.triangleIcon} />
+              <Text style={styles.metaText}>{formattedDistance}</Text>
+            </View>
+
+            {/* Pin / waypoints icon */}
+            <View style={styles.metaItem}>
+              <View style={styles.waypointIcon}>
+                <View style={styles.waypointHead} />
+                <View style={styles.waypointPoint} />
+              </View>
+              <Text style={styles.metaText}>{route.waypointCount} waypoints</Text>
+            </View>
+          </View>
+
+          {/* Row 2: date */}
+          <View style={styles.metaRow}>
+            <View style={styles.metaItem}>
+              <View style={styles.calendarIcon}>
+                <View style={styles.calendarTop} />
+                <View style={styles.calendarBody} />
+              </View>
+              <Text style={styles.metaText}>{route.importDate}</Text>
+            </View>
           </View>
         </View>
 
         {/* Delete button */}
         <TouchableOpacity
-          onPress={(e) => {
-            onDelete();
-          }}
+          onPress={() => onDelete()}
           style={styles.deleteButton}
           accessibilityLabel="Delete route"
           hitSlop={{ top: 8, bottom: 8, left: 8, right: 8 }}
         >
-          <Text style={styles.deleteIcon}>X</Text>
+          {/* Trash icon */}
+          <View style={styles.trashIcon}>
+            <View style={styles.trashLid} />
+            <View style={styles.trashBody}>
+              <View style={styles.trashLine} />
+              <View style={styles.trashLine} />
+            </View>
+          </View>
         </TouchableOpacity>
       </View>
     </TouchableOpacity>
@@ -68,18 +91,7 @@ const styles = StyleSheet.create({
     marginBottom: 12,
   },
   cardActive: {
-    borderWidth: 2,
-    borderColor: '#4CAF50',
-  },
-  activeIndicator: {
-    position: 'absolute',
-    left: 0,
-    top: 16,
-    bottom: 16,
-    width: 3,
-    backgroundColor: '#4CAF50',
-    borderTopRightRadius: 2,
-    borderBottomRightRadius: 2,
+    backgroundColor: 'rgba(245,124,0,0.06)',
   },
   row: {
     flexDirection: 'row',
@@ -90,27 +102,84 @@ const styles = StyleSheet.create({
     flex: 1,
   },
   name: {
-    fontSize: 17,
+    fontSize: 18,
     fontWeight: '600',
     color: '#2C2C2C',
-    marginBottom: 6,
+    marginBottom: 8,
   },
   metaRow: {
     flexDirection: 'row',
     alignItems: 'center',
     flexWrap: 'wrap',
+    gap: 16,
+    marginBottom: 4,
+  },
+  metaItem: {
+    flexDirection: 'row',
+    alignItems: 'center',
     gap: 6,
   },
   metaText: {
     fontSize: 13,
     color: '#7A7267',
   },
-  metaDot: {
-    width: 3,
-    height: 3,
-    borderRadius: 1.5,
-    backgroundColor: '#7A7267',
+  // Triangle icon for distance
+  triangleIcon: {
+    width: 0,
+    height: 0,
+    borderLeftWidth: 5,
+    borderRightWidth: 5,
+    borderBottomWidth: 9,
+    borderLeftColor: 'transparent',
+    borderRightColor: 'transparent',
+    borderBottomColor: '#7A7267',
   },
+  // Waypoint pin icon
+  waypointIcon: {
+    width: 10,
+    height: 14,
+    alignItems: 'center',
+  },
+  waypointHead: {
+    width: 8,
+    height: 8,
+    borderRadius: 4,
+    borderWidth: 1.5,
+    borderColor: '#7A7267',
+  },
+  waypointPoint: {
+    width: 0,
+    height: 0,
+    borderLeftWidth: 3,
+    borderRightWidth: 3,
+    borderTopWidth: 5,
+    borderLeftColor: 'transparent',
+    borderRightColor: 'transparent',
+    borderTopColor: '#7A7267',
+    marginTop: -1,
+  },
+  // Calendar icon
+  calendarIcon: {
+    width: 12,
+    height: 13,
+  },
+  calendarTop: {
+    width: 12,
+    height: 3,
+    backgroundColor: '#7A7267',
+    borderTopLeftRadius: 2,
+    borderTopRightRadius: 2,
+  },
+  calendarBody: {
+    width: 12,
+    height: 10,
+    borderWidth: 1.5,
+    borderTopWidth: 0,
+    borderColor: '#7A7267',
+    borderBottomLeftRadius: 2,
+    borderBottomRightRadius: 2,
+  },
+  // Delete button
   deleteButton: {
     width: 36,
     height: 36,
@@ -119,9 +188,36 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     justifyContent: 'center',
   },
-  deleteIcon: {
-    color: '#E53935',
-    fontSize: 14,
-    fontWeight: '700',
+  // Trash icon
+  trashIcon: {
+    width: 14,
+    height: 16,
+    alignItems: 'center',
+  },
+  trashLid: {
+    width: 14,
+    height: 2,
+    backgroundColor: '#E53935',
+    borderRadius: 1,
+  },
+  trashBody: {
+    width: 10,
+    height: 12,
+    borderWidth: 1.5,
+    borderTopWidth: 0,
+    borderColor: '#E53935',
+    borderBottomLeftRadius: 2,
+    borderBottomRightRadius: 2,
+    marginTop: 1,
+    flexDirection: 'row',
+    justifyContent: 'space-evenly',
+    alignItems: 'center',
+    paddingTop: 2,
+  },
+  trashLine: {
+    width: 1.5,
+    height: 6,
+    backgroundColor: '#E53935',
+    borderRadius: 1,
   },
 });
