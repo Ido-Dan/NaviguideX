@@ -6,7 +6,7 @@ An offroad 4x4 navigation app for iOS, built with React Native + TypeScript. Rev
 ## Architecture
 - **Read before coding**: `docs/architecture.md` (tech stack, data models, project structure, implementation phases)
 - **Design reference**: `docs/design-spec.md` (screens, colors, typography, interaction patterns)
-- **Figma export**: `figma-export/` (web-based UI mockups to translate into React Native)
+
 
 ## Superpowers
 - Always apply and use superpowers skills when available. If there's even a 1% chance a skill applies, invoke it before acting.
@@ -37,9 +37,9 @@ An offroad 4x4 navigation app for iOS, built with React Native + TypeScript. Rev
 - Use the color palette from `docs/design-spec.md` section 4.1. Do not make up colors.
 
 ### Follow the UI
-- The Figma export in `figma-export/src/app/components/` is the source of truth for visual design.
+- Use `docs/design-spec.md` as the source of truth for visual design.
 - Translate to React Native `StyleSheet` — do not use Tailwind/NativeWind.
-- Match the layout, spacing, and colors from the Figma export closely.
+- Match the layout, spacing, and colors from the design spec closely.
 
 ### File Ownership
 - Only edit files within your assigned task scope.
@@ -107,4 +107,3 @@ npm install && cd ios && pod install --repo-update
 - `@react-native-documents/picker` throws on user cancel — always catch
 - `babel.config.js` must include `react-native-reanimated/plugin` as last plugin
 - Database migrations run via version check in `settings` table (`_db_version` key)
-- `figma-export/` fails TypeScript check — it's a web export, not part of the RN build
