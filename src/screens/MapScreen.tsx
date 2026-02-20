@@ -1,5 +1,5 @@
 import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react';
-import { View, Alert, StyleSheet } from 'react-native';
+import { View, Animated, Alert, StyleSheet } from 'react-native';
 import BottomSheet from '@gorhom/bottom-sheet';
 import MapLibreGL, { type CameraRef } from '@maplibre/maplibre-react-native';
 import type { NativeStackScreenProps } from '@react-navigation/native-stack';
@@ -149,6 +149,20 @@ export function ConnectedMapScreen({ navigation: screenNav }: MapScreenNavProps)
     [userPosition?.lon, userPosition?.lat],
   );
 
+  // Animated heading value — driven here so GPSMarker receives a stable ref
+  // and React.memo prevents re-renders (fixes marker flicker)
+  const headingAnim = useRef(new Animated.Value(0)).current;
+
+  useEffect(() => {
+    const targetRotation = mapOrientation === 'north-up' ? heading : 0;
+    Animated.spring(headingAnim, {
+      toValue: targetRotation,
+      tension: 60,
+      friction: 10,
+      useNativeDriver: true,
+    }).start();
+  }, [heading, mapOrientation, headingAnim]);
+
   return (
     <View style={styles.container}>
       {/* Full-screen MapLibre map */}
@@ -175,10 +189,7 @@ export function ConnectedMapScreen({ navigation: screenNav }: MapScreenNavProps)
           <MapLibreGL.MarkerView
             coordinate={markerCoordinate}
           >
-            <GPSMarker
-              heading={heading}
-              orientationMode={mapOrientation}
-            />
+            <GPSMarker headingAnim={headingAnim} />
           </MapLibreGL.MarkerView>
         )}
       </MapView>

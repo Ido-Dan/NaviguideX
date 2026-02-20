@@ -1,27 +1,15 @@
-import React, { useEffect, useRef } from 'react';
+import React, { useEffect, useRef, useMemo } from 'react';
 import { View, Animated, StyleSheet } from 'react-native';
 
 interface GPSMarkerProps {
-  heading: number;
-  orientationMode: 'north-up' | 'heading-up';
+  /** Pre-animated rotation value — driven by the parent to avoid re-renders */
+  headingAnim: Animated.Value;
 }
 
 export const GPSMarker = React.memo(function GPSMarker({
-  heading,
-  orientationMode,
+  headingAnim,
 }: GPSMarkerProps) {
-  const rotation = useRef(new Animated.Value(heading)).current;
   const pulse = useRef(new Animated.Value(1)).current;
-
-  useEffect(() => {
-    const targetRotation = orientationMode === 'north-up' ? heading : 0;
-    Animated.spring(rotation, {
-      toValue: targetRotation,
-      tension: 60,
-      friction: 10,
-      useNativeDriver: true,
-    }).start();
-  }, [heading, orientationMode, rotation]);
 
   useEffect(() => {
     const animation = Animated.loop(
@@ -42,10 +30,13 @@ export const GPSMarker = React.memo(function GPSMarker({
     return () => animation.stop();
   }, [pulse]);
 
-  const rotateInterpolation = rotation.interpolate({
-    inputRange: [-360, 360],
-    outputRange: ['-360deg', '360deg'],
-  });
+  const rotateInterpolation = useMemo(
+    () => headingAnim.interpolate({
+      inputRange: [-360, 360],
+      outputRange: ['-360deg', '360deg'],
+    }),
+    [headingAnim],
+  );
 
   return (
     <View style={styles.container} pointerEvents="none">
