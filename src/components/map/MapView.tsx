@@ -25,7 +25,7 @@ interface MapViewProps {
 
 function MapView({
   bearing = 0,
-  centerCoordinate = ISRAEL_CENTER,
+  centerCoordinate,
   zoomLevel = DEFAULT_ZOOM,
   offlineRegions,
   children,
@@ -62,8 +62,7 @@ function MapView({
           centerCoordinate: ISRAEL_CENTER,
           zoomLevel: DEFAULT_ZOOM,
         }}
-        centerCoordinate={centerCoordinate}
-        zoomLevel={zoomLevel}
+        {...(centerCoordinate ? { centerCoordinate } : {})}
         heading={bearing}
         minZoomLevel={MIN_ZOOM}
         maxZoomLevel={MAX_ZOOM}

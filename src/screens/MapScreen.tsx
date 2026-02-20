@@ -1,4 +1,4 @@
-import React, { useCallback, useEffect, useRef, useState } from 'react';
+import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { View, Alert, StyleSheet } from 'react-native';
 import BottomSheet from '@gorhom/bottom-sheet';
 import MapLibreGL, { type CameraRef } from '@maplibre/maplibre-react-native';
@@ -123,9 +123,11 @@ export function ConnectedMapScreen({ navigation: screenNav }: MapScreenNavProps)
     [],
   );
 
-  const handleRegionDidChange = useCallback(() => {
-    // User panned the map, stop auto-following
-    setFollowingUser(false);
+  const handleRegionDidChange = useCallback((feature: GeoJSON.Feature) => {
+    // Only stop following when the user physically pans/zooms the map
+    if (feature.properties?.isUserInteraction) {
+      setFollowingUser(false);
+    }
   }, [setFollowingUser]);
 
   // Compute values for map
@@ -135,6 +137,13 @@ export function ConnectedMapScreen({ navigation: screenNav }: MapScreenNavProps)
     isFollowingUser && userPosition
       ? [userPosition.lon, userPosition.lat]
       : undefined;
+
+  // Memoize marker coordinate so it only changes when lat/lon actually change,
+  // not on every compass heading update
+  const markerCoordinate = useMemo(
+    () => userPosition ? [userPosition.lon, userPosition.lat] as [number, number] : undefined,
+    [userPosition?.lon, userPosition?.lat],
+  );
 
   return (
     <View style={styles.container}>
@@ -157,9 +166,9 @@ export function ConnectedMapScreen({ navigation: screenNav }: MapScreenNavProps)
         )}
 
         {/* GPS position marker */}
-        {userPosition && (
+        {markerCoordinate && (
           <MapLibreGL.MarkerView
-            coordinate={[userPosition.lon, userPosition.lat]}
+            coordinate={markerCoordinate}
           >
             <GPSMarker
               heading={heading}
