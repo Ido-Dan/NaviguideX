@@ -34,7 +34,9 @@
 		<true/>
 	</dict>
 	<key>NSLocationWhenInUseUsageDescription</key>
-	<string></string>
+	<string>NaviguideX needs your location to show your position on the map and navigate trails</string>
+	<key>NSMotionUsageDescription</key>
+	<string>NaviguideX uses motion sensors for compass heading</string>
 	<key>RCTNewArchEnabled</key>
 	<true/>
 	<key>UILaunchStoryboardName</key>
