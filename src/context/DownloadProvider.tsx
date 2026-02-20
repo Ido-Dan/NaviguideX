@@ -80,16 +80,17 @@ export function DownloadProvider({ children }: DownloadProviderProps) {
 
     return REGIONS.map(region => {
       const liveProgress = downloadState.regionProgress[region.id];
+      const dbRegion = dbMap.get(region.id);
       if (liveProgress) {
         return {
           ...region,
           status: liveProgress.status,
           downloadProgress: liveProgress.progress,
+          localFilePath: dbRegion?.localFilePath,
         };
       }
 
       // Fall back to DB state
-      const dbRegion = dbMap.get(region.id);
       if (dbRegion) {
         return dbRegion;
       }
