@@ -89,7 +89,7 @@ function MapView({
           key={region.id}
           id={`offline-${region.id}`}
           tileUrlTemplates={[
-            `${getTilesDir()}/${region.id}/{z}/{x}/{y}.png`,
+            `file://${getTilesDir()}${region.id}/{z}/{x}/{y}.png`,
           ]}
           tileSize={TILE_SIZE}
           minZoomLevel={MIN_ZOOM}
